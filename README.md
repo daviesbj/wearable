@@ -1,0 +1,4 @@
+wearable
+========
+
+Wearable accelerometer analysis 
