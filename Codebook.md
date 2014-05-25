@@ -1,25 +1,33 @@
 Codebook for Brian Davies' Wearable Computing course project
 ============================================================
 
+Data Source and preliminaries
+-----------------------------
+
+As instructed, I got the file from https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+
+The analysis starts with this file in a fresh, otherwise empty directory
+
 Processing Chain
 ----------------
 
-This is implemented in run_analysis in the R file of the same name.
+This is implemented in __run_analysis__ in the R file of the same name.
 
-1. Load __test__ dataset as a frame using __assemble_dataset__
+1. Unzip the file as downloaded
+2. Load __test__ dataset as a frame using __assemble_dataset__
   1. Check availability of all files in __file_info__
   2. Load activity dta and convert from numerics to descriptive strings
   3. Load subject data
   4. Load feature data and add descriptive row headings
   5. Load sensor data, 9 sets of 128 measurements per experiment, generate headings
   6. As these are loaded, merge into a single frame
-2. Repeat for __train__ dtaset
-3. Merge __test__ and __train__ into a single frame
-4. Optionally output a CSV with entire merged dataset
-5. Select only activity and subject columns plus features ending in __-mean()__ and __-std()__
-6. By default, output
-7. Summarize by taking feature averages over activity and subject
-8. By default, output
+3. Repeat for __train__ dtaset
+4. Merge __test__ and __train__ into a single frame
+5. Optionally output a CSV with entire merged dataset
+6. Select only activity and subject columns plus features ending in __-mean()__ and __-std()__
+7. By default, output as a CSV
+8. Summarize by taking feature averages over activity and subject
+9. By default, output as a CSV
 
 Output files
 ------------
