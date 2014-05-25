@@ -38,6 +38,9 @@ run_analysis <- function( verbose=TRUE, startfile='UCI HAR Dataset.zip',
   }
   
   if(verbose) message( "Selecting only -mean() and -std() columns" )
+  ##
+  ## CHANGE FOLLOWING STATEMENT TO CHANGE FEATURE SELECTION
+  ##
   wanted.cols <- grep( 'subject|activity|-mean[(]|-std[(]', colnames(full.frame) )
   meanavg.frame <- full.frame[,wanted.cols]
   if( means_csv != '' ){

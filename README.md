@@ -23,10 +23,17 @@ the calculation of aggrgates, which I haven't been able to eliminate but which a
 At the end, you should have the following files:
 
 File                |     Contents
---------------------|---------------------------------------------------------------
+--------------------|-----------------------------------------------------------------
 UCI_HAR_means.csv   | Dataset stripped down to just the -means() and -std() features
-UCI_HAR_summary.csv | Dataset further summarized to averages over subsject and activity
+UCI_HAR_summary.csv | Dataset further summarized to averages over subject and activity
 
+Note on interpretation of the assignment
+----------------------------------------
 
+I assumed the instruction _Extracts only the measurements on the mean and standard deviation for each
+measurement_ meant to select only the columns corresponding to features ending in __-mean()__ and __-std()__. These
+come in pairs, one of each. There are also features like __fBodyBodyGyroJerkMag-meanFreq()__ and __angle(Z,gravityMean)__
+that seem differently specied. If it were necessary to include them, the place to make the necessary changes
+is highlighted in __run_analysis.R__
 
 
