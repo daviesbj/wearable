@@ -279,7 +279,7 @@ assemble_dataset <- function( set.name, source.dir = "~/wearable/UCI HAR Dataset
 
 if( verbose ) message( " ... checking file availability for dataset '", set.name, "'" )
 file.list <- file_info( set.name, source.dir = source.dir, verbose = verbose )
-if( any( ! file.list$ok) ) error( "Something wrong with data files -- run file_info and investigate")
+if( any( ! file.list$ok) ) stop( "Something wrong with data files -- run file_info and investigate")
 if( verbose ) message( " ... looks good!" )
 
 if( verbose ) message( " ... reading ", "activity_labels.txt" )
@@ -390,7 +390,7 @@ So now I need to replace the Group.1 and Group.2 headings in __interim.agg.frame
 I decided to call it interim_agg.frame)_
 
 ```{r pick aggregate headings}
-agg.headings.wanted <- colnames(interim.agg.frame)[!grepl('subject|activity', colnames(agg.frame))]
+agg.headings.wanted <- colnames(interim.agg.frame)[!grepl('subject|activity', colnames(interim.agg.frame))]
 agg.frame <- interim.agg.frame[,agg.headings.wanted]
 agg.headings.wanted[1]<-'activity'
 agg.headings.wanted[2]<-'subject'
@@ -398,3 +398,76 @@ colnames(agg.frame)<-agg.headings.wanted
 ```
 
 And __agg.frame__ is the final result!!!
+
+Right, and now I'm ready to build __run_analysis.R__. This defines one new subroutine, __run_analysis__
+
+```{r define run_analysis}
+## run_analysis
+## Starts with a directory containing UCI HAR Dataset.zip (or whatever you've called it)
+## Then it does the following:
+##   (1) Loads and merges the test and train datasets as a single file
+##   (2) Optionally saves them as one honkin' big CSV, if the full_csv parameter is a nonempty string
+##   (3) Creates a frame containing only the -mean() and -std() columns
+##   (4) By default, saves to a file called UCI_HAR_means.csv
+##   (5) Summarizes columns to their means by activity & subject
+##   (6) By default, saves to a file called UCI_HAR_summary.csv
+##
+## The filenames used for steps 2, 4 and 6 are set in the string parms full_csv, means_csv and summary_csv
+## By default, you get a running commentary. To suppress it, set logical parm verbose=FALSE
+##
+## Necessary auxiliary functions included at the end of this file
+
+run_analysis <- function( verbose=TRUE, startfile='UCI HAR Dataset.zip',
+                          full_csv='', means_csv='UCI_HAR_means.csv', summary_csv='UCI_HAR_summary.csv' ){
+  
+  if( ! file.exists(startfile)) stop( "FAIL: please setwd() to a directory containing ", startfile )
+  if(verbose) message( "Unzipping ", startfile )
+  unzip(startfile)
+  if( ! file.exists('UCI HAR Dataset')) stop( "Something went wrong unzipping" )
+  
+  dataset.dir <- paste( getwd(), '/UCI HAR Dataset', sep='' )
+  
+  if( verbose ) message( "Assembling test dataset" )
+  test.frame <- assemble_dataset( 'test', source.dir=dataset.dir, verbose=verbose )
+  
+  if( verbose ) message( "Assembling train dataset" )
+  train.frame <- assemble_dataset( 'train', source.dir=dataset.dir, verbose=verbose )
+  
+  if( verbose ) message( "Merging datasets" )
+  full.frame <- full.frame <- rbind( test.frame, train.frame )
+  rm( test.frame, train.frame )
+  if( full_csv != '' ){
+    if(verbose) message( "Writing full dataset to ", full_csv)
+    write.csv(full.frame,full_csv,row.names=FALSE)
+  }
+  
+  if(verbose) message( "Selecting only -mean() and -std() columns" )
+  wanted.cols <- grep( 'subject|activity|-mean[(]|-std[(]', colnames(full.frame) )
+  meanavg.frame <- full.frame[,wanted.cols]
+  if( means_csv != '' ){
+    if(verbose) message( "Writing means/stds dataset to ", means_csv)
+    write.csv(meanavg.frame,means_csv,row.names=FALSE)
+  }
+  
+  if(verbose) message( "Calculating averages by activity and subject" )
+  interim.agg.frame<-aggregate(meanavg.frame,by=list(meanavg.frame$subject,meanavg.frame$activity),mean)
+  agg.headings.wanted <- colnames(interim.agg.frame)[!grepl('subject|activity', colnames(interim.agg.frame))]
+  agg.frame <- interim.agg.frame[,agg.headings.wanted]
+  agg.headings.wanted[1]<-'activity'
+  agg.headings.wanted[2]<-'subject'
+  colnames(agg.frame)<-agg.headings.wanted
+  if( summary_csv != '' ){
+    if(verbose) message( "Writing summary dataset to ", summary_csv)
+    write.csv(agg.frame,summary_csv,row.names=FALSE)
+  }
+}
+```
+
+The real takeaway here was the __write.csv( framename, filename, names=FALSE )__ to avoid row numbers getting written
+into the CSV. __run_analysis.R__ also contains copy/pastes of all the lower-level functions to make it a completely
+standalone utility.
+
+I also have to stop typing __error()__ instead of __stop()__
+
+_Now I'm ready to upload! Ooooh!_
+

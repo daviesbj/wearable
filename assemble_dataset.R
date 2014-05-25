@@ -8,7 +8,7 @@ assemble_dataset <- function( set.name, source.dir = "~/wearable/UCI HAR Dataset
 
 if( verbose ) message( " ... checking file availability for dataset '", set.name, "'" )
 file.list <- file_info( set.name, source.dir = source.dir, verbose = verbose )
-if( any( ! file.list$ok) ) error( "Something wrong with data files -- run file_info and investigate")
+if( any( ! file.list$ok) ) stop( "Something wrong with data files -- run file_info and investigate")
 if( verbose ) message( " ... looks good!" )
 
 if( verbose ) message( " ... reading ", "activity_labels.txt" )
